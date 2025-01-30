@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+</head><body>
+<h1>久山町スコア計算アプリ</h1>
+<div class=table2 id=list>
+
+<span>性別</span>
+<span>
+  <label><input id=ingender0 type=radio name=radio1>女性</label>
+  <label><input id=ingender1 type=radio name=radio1>男性</label>
+</span>
+
+<span>収縮期血圧</span>
+<span><input id=inpress type=number>mmHg</span>
+
+<span>糖代謝異常</span>
+<span>
+  <label><input id=insuger0 type=radio name=radio2>なし</label>
+  <label><input id=insuger1 type=radio name=radio2>あり</label>
+</span>
+
+<span>血清LDL-C</span>
+<span><input id=inldl type=number>mg/dL</span>
+
+<span>血清HDL-C</span>
+<span><input id=inhdl type=number>mg/dL</span>
+
+<span>喫煙</span>
+<span>
+  <label><input id=insmoke0 type=radio name=radio3>なし</label>
+  <label><input id=insmoke1 type=radio name=radio3>あり</label>
+</span>
+
+</div>
+
+<br>
+<div class=point>ポイント: <span id=point>&nbsp;</span></div>
+<div id=divrisks>
+<div class=risk>40-49才時リスク: <span id=risk1>&nbsp;</span></div>
+<div class=risk>50-59才時リスク: <span id=risk2>&nbsp;</span></div>
+<div class=risk>60-69才時リスク: <span id=risk3>&nbsp;</span></div>
+<div class=risk>70-79才時リスク: <span id=risk4>&nbsp;</span></div>
+</div>
+</div>
+
+<script type="module">
+const calcPress = (n) => {
+  if (n < 120) return 0;
+  if (n < 130) return 1;
+  if (n < 140) return 2;
+  if (n < 160) return 3;
+  return 4;
+};
+const calcLDL = (n) => {
+  if (n < 120) return 0;
+  if (n < 140) return 1;
+  if (n < 160) return 2;
+  return 3;
+};
+const calcHDL = (n) => {
+  if (n < 40) return 2;
+  if (n < 60) return 1;
+  return 0;
+};
+
+const risktable = [
+  [ "point", "40-49", "50-59", "60-69", "70-79" ],
+  [  0, 1.0, 1.0, 1.7, 3.4 ],
+  [  1, 1.0, 1.0, 1.9, 3.9 ],
+  [  2, 1.0, 1.0, 2.2, 4.5 ],
+  [  3, 1.0, 1.1, 2.6, 5.2 ],
+  [  4, 1.0, 1.3, 3.0, 6.0 ],
+  [  5, 1.0, 1.4, 3.4, 6.9 ],
+  [  6, 1.0, 1.7, 3.9, 7.9 ],
+  [  7, 1.0, 1.9, 4.5, 9.1 ],
+  [  8, 1.1, 2.2, 5.2, 10.4 ],
+  [  9, 1.3, 2.6, 6.0, 11.9 ],
+  [ 10, 1.4, 3.0, 6.9, 13.6 ],
+  [ 11, 1.7, 3.4, 7.9, 15.5 ],
+  [ 12, 1.9, 3.9, 9.1, 17.7 ],
+  [ 13, 2.2, 4.5, 10.4, 20.2 ],
+  [ 14, 2.6, 5.2, 11.9, 22.9 ],
+  [ 15, 3.0, 6.0, 13.6, 25.9 ],
+  [ 16, 3.4, 6.9, 15.5, 29.3 ],
+  [ 17, 3.9, 7.9, 17.7, 33.0 ],
+  [ 18, 4.5, 9.1, 20.2, 37.0 ],
+  [ 19, 5.2, 10.4, 22.9, 41.1 ],
+];
+const calcRisks = (point) => {
+  const d = risktable[point + 1];
+  const res = {};
+  for (let i = 1; i < d.length; i++) {
+    res[risktable[0][i]] = d[i];
+  }
+  return res;
+};
+const getRiskColor = (s) => {
+  if (s.indexOf("低リスク") >= 0) return "#aaaaff";
+  if (s.indexOf("中リスク") >= 0) return "#ffffaa";
+  if (s.indexOf("高リスク") >= 0) return "#ffaaaa";
+  return "#aaaaaa"
+};
+
+const calc = () => {
+  const chk2n = (name) => {
+    const chk0 = document.getElementById("in" + name + "0");
+    const chk1 = document.getElementById("in" + name + "1");
+    return chk0.checked ? 0 : (chk1.checked ? 1 : NaN);
+  };
+  const data = {};
+  data.gender = chk2n("gender");
+  data.press = parseInt(inpress.value);
+  data.suger = chk2n("suger");
+  data.ldl = parseInt(inldl.value);
+  data.hdl = parseInt(inhdl.value);
+  data.smoke = chk2n("smoke");
+  console.log(data);
+  for (const name in data) {
+    if (isNaN(data[name])) {
+      point.innerHTML = "&nbsp;";
+      return;
+    }
+  }
+  let p = 0;
+  p += data.gender == 0 ? 0 : 7;
+  p += calcPress(data.press);
+  p += data.suger == 0 ? 0 : 1;
+  p += calcLDL(data.ldl);
+  p += calcHDL(data.hdl);
+  p += data.smoke == 0 ? 0 : 2;
+  point.textContent = p;
+
+  const risks = calcRisks(p);
+  console.log(risks);
+  const showRisk = (n) => {
+    if (n == 1.0) return "1%未満(低リスク)";
+    if (n < 2.0) return n.toFixed(1) + "%(低リスク)";
+    if (n < 10.0) return n.toFixed(1) + "%(中リスク)";
+    return n.toFixed(1) + "%(高リスク)";
+  };
+  risk1.textContent = showRisk(risks["40-49"]);
+  risk2.textContent = showRisk(risks["50-59"]);
+  risk3.textContent = showRisk(risks["60-69"]);
+  risk4.textContent = showRisk(risks["70-79"]);
+  divrisks.querySelectorAll("div").forEach(i => i.style.backgroundColor = getRiskColor(i.textContent));
+};
+
+document.body.querySelectorAll("input").forEach(i => i.oninput = () => calc());
+</script>
+
+
+<style>
+.table2 {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+}
+.table2 > * {
+  padding: .2em .5em;
+}
+input[type=number] {
+  width: 4em;
+  margin-right: .2em;
+  font-size: 16px;
+}
+.point, .risk {
+  display: block;
+  text-align: left;
+  min-height: 1em;
+  font-size: 20px;
+  padding: .5em;
+  margin: .5em;
+  background-color: lightgreen;
+  color: black;
+  font-weight: bold;
+}
+.risk {
+  background-color: #eee;
+}
+</style>
+
+</body></html>
