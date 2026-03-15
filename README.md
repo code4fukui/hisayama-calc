@@ -1,5 +1,7 @@
 # hisayama-calc
 
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
+
 A calculator for estimating cardiovascular disease risk in Hisayama, Japan.
 
 ## Demo
