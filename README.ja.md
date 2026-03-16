@@ -1,6 +1,6 @@
 # hisayama-calc
 
-久山町の心臓病リスク計算アプリです。収縮期血圧、LDL-コレステロール、HDL-コレステロール、喫煙状況などの情報を入力すると、心臓病リスクを計算して表示します。
+久山町の心臓病リスク計算アプリです。性別、収縮期血圧、糖代謝異常、LDL-コレステロール、HDL-コレステロール、喫煙状況を入力すると、年代別の心臓病リスクを計算して表示します。
 
 ## デモ
 [https://code4fukui.github.io/hisayama-calc/](https://code4fukui.github.io/hisayama-calc/)

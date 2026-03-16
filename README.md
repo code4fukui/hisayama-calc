@@ -16,4 +16,4 @@ A calculator for estimating cardiovascular disease risk in Hisayama, Japan.
 The application can be used directly in the web browser at the demo link above.
 
 ## License
-This project is licensed under the MIT License.
+MIT License — see [LICENSE](LICENSE).
